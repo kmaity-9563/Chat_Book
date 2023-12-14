@@ -3,11 +3,13 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Homepage from '../pages/Homepages';
 import Chatpage from '../pages/Chatpages';
-import Signup from '../components/Signup'
-import Login from '../components/Login'
+import Signup from './components/Signup'
+import Login from './components/Login'
+import { RecoilRoot } from 'recoil';
 function App() {
 
   return (
+    <RecoilRoot>
     <div className="App" 
     style={{width: "100vw",
                 height: "100vh",
@@ -23,6 +25,7 @@ function App() {
     </Routes>
    </Router> 
    </div>
+   </RecoilRoot>
   )
 }
 
