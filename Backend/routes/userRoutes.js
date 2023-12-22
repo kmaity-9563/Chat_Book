@@ -5,9 +5,20 @@ const User = require('../models/UserModel')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const SECRET = 'iamkm'
-const jwtAuth = require('../middleware/authMiddleware')
+const authentication = require('../middleware/authMiddleware')
 
-router.post('/signup', async (req, res) => {
+
+router.get('/initUser',authentication , async (req,res) => {
+    const user = await User.findOne({username : req.body.username});
+  console.log(user)
+    if(!user) {
+      res.status(400).json({message : 'User not found'});
+      return;
+    } 
+    res.json({ username : user.username});
+
+})
+router.post('/signup',authentication, async (req, res) => {
     const { username, password } = req.body;
     // try {
       const user = await User.findOne({ username });
@@ -34,7 +45,7 @@ router.post('/signup', async (req, res) => {
       } 
   });
 
-  router.post('/login', async (req, res) => {
+  router.post('/login',authentication , async (req, res) => {
     const { username, password } = req.body;
     try {
         const user = await User.findOne({ username });
@@ -64,7 +75,7 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-router.get('/alluser',jwtAuth , async (req, res) => {
+router.get('/alluser',authentication , async (req, res) => {
   const searchQuery = req.query.search
   ? 
   {
