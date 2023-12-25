@@ -1,45 +1,32 @@
-const express = require('express')
-const chatdata = require('./chatdata/chatdata')
-const mongoose = require('mongoose')
-// const connectDB = require("./config/db");
-const cors = require('cors')
-const userRoutes = require("./routes/userRoutes")
-const chatRoutes = require("./routes/chatRoutes")
-// const  {notFound, errorHandler} = require('./middleware/errMiddleware');
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const userRoutes = require('./routes/userRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 
-// dotenv.config();
-// connectDB();
+const app = express();
 
-const app = express()
-
-app.use(cors())
+app.use(cors());
 app.use(express.json());
 
-// app.use(notFound);
-// app.use(errorHandler);
+app.use('/chat', chatRoutes);
+app.use('/user', userRoutes);
 
-// app.use("/user", userRoutes)
-app.use("/chat",chatRoutes)
-app.use("/user",userRoutes)
+app.get('/', (req, res) => {
+  res.send('Welcome');
+});
 
-
-app.get('/', (req,res) => {
-    res.send('Welcome')
-})
-
-// app.get('/chat', (req,res) => {
-//     res.send(chatdata)
-// })
-
-// mongoose.connect('mongodb+srv://koushik:koushik@cluster0.v1klpsh.mongodb.net/?retryWrites=true&w=majority', {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// });
  mongoose.connect('mongodb+srv://kmaity:kmaity@chatapp.hkfsrrm.mongodb.net/?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
-
-app.listen(3000, () =>{
-    console.log('listening on port 3000')
-})
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something went wrong!');
+  });
+  
+  const PORT = process.env.PORT || 3000;
+  
+  app.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}`);
+  });

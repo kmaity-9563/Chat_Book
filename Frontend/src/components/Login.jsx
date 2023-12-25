@@ -1,54 +1,70 @@
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Card, Typography } from "@mui/material";
-import { useState } from "react";
+import {useState} from "react";
 import { styled } from "@mui/material/styles";
 // import Button from '@mui/material/Button';
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import axios from "axios";
 // import { BASE_URL } from "../config.js";
 import { useNavigate } from "react-router-dom";
-// import {useSetRecoilState} from "recoil";
-// import {userState} from "../store/atoms/user.js";
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 // import { json } from "stream/consumers";
+import {userState} from "../store/atoms/user";
+import { useSetRecoilState } from "recoil";
+import { useEffect } from "react";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [Loading,setLoading] = useState(false);
+  // const [Loading,setLoading] = useState(false);
   const [Pic,setPic] = useState("")
-  const [errormessage, setErrormessage] = useState("");
-  // const navigate = useNavigate();
-  // const setUser = useSetRecoilState(userState);
+  // const [errormessage, setErrormessage] = useState("");
+  const navigate = useNavigate();
+  const setUser = useSetRecoilState(userState);
+
+
 
   
   const submitHandler = async() => {
-    setLoading(true);
-   if (!username || !password) {
-    console.log("please enter");
-    setLoading(false);
-    return <Stack sx={{ width: '100%' }} spacing={2}>
-        <Alert severity="error">Please enter both username and password</Alert>
-    </Stack>;
-}
+    
+    try {
+      if (!username || !password) {
+        throw new Error('Please enter both username and password');
+      }
 
-    const response = await axios.post("http://localhost:3000/user/login", {
-    username: username,
-    password: password
-});
+      const response = await axios.post('http://localhost:3000/user/login', {
+        username: username,
+        password: password,
+      });
 
-    let data = response.data;
-    console.log(data);
-    localStorage.setItem("token", data.token);
-    // window.location = "/"
-   
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      console.log(response.data.token);
+     
+      localStorage.setItem('token', response.data.token);
+      setUser((prevUser) => ({
+        ...prevUser,
+        available: true,
+      }));
+      {console.log(setUser.available)}
+      // navigate('/chat');
+    } catch (error) {
+      console.error('Error during login:', error);
+      // setErrorMessage(error.message);
+    }
+
 }
+useEffect(() => {
+  console.log('Updated userName:', setUser.available);
+}, [setUser.userName]);
 
     const handleFileChange = (pic) => {
-      setLoading(true);
-      if (pic == undefined) {
+      // setLoading(true);
+      if (!pic) {
     return <Stack sx={{ width: '100%' }} spacing={2}>
         <Alert severity="error">Please select a file</Alert>
     </Stack>;
@@ -67,10 +83,10 @@ function Login() {
           .then(data => {
             setPic(data.url.toString());
             console.log(data.url.toString())
-            setLoading(false);
+            // setLoading(false);
           }).catch(err => {
             console.error(err);
-            setLoading(false);
+            // setLoading(false);
           })
       } else {
         <Stack sx={{ width: '100%' }} spacing={2}>
@@ -129,7 +145,7 @@ function Login() {
               setUsername(event.target.value);
             }}
             fullWidth={true}
-            label="Email"
+            label="username"
             variant="outlined"
           />
           <br />
@@ -173,5 +189,7 @@ function Login() {
     </div>
   );
 }
+
+
 
 export default Login;

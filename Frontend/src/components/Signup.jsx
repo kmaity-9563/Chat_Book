@@ -34,6 +34,12 @@ function Signup() {
             const data = await response.json();
             console.log(data);
             localStorage.setItem("token", data.token);
+
+            setUser({
+                available : true
+            })
+
+            navigate("/login")
         } catch (error) {
             console.error("fetch request failed:", error);
         }
@@ -52,7 +58,7 @@ function Signup() {
                             setUsername(event.target.value);
                         }}
                         fullWidth={true}
-                        label="Email"
+                        label="username"
                         variant="outlined"
                     />
                     <br/><br/>
