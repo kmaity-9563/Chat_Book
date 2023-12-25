@@ -1,105 +1,96 @@
 const express = require('express');
 const router = express.Router();
-// const { registerUser } = require('../controllers/userController'); // Assuming registerUser is a function in userController
-const User = require('../models/UserModel')
+const User = require('../models/UserModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const SECRET = 'iamkm'
-const authentication = require('../middleware/authMiddleware')
+const SECRET = 'iamkm';
+const authentication = require('../middleware/authMiddleware');
 
-
-router.get('/initUser', authentication, async (req, res) => {
-  const user = await User.findOne({ username: req.body.username });
-  console.log(user)
-  if (!user) {
-    res.status(400).json({ message: 'User not found' });
-    return;
-  }
-  res.json({ username: user.username });
-})
-
-router.post('/signup', async (req, res) => {
-  const { username, password } = req.body;
+router.get('/init', async (req, res, next) => {
   try {
-    const user = await User.findOne({ username });
-    console.log(user);
-    // ... rest of the code
-    if (user) {
-      res.status(403).json({ message: 'User already exists', user });
-    } else {
-      let newUser = new User({ username, password });
-      bcrypt.genSalt(10, (err, salt) => {
-        if (err) {
-          console.log(err);
-          return res.status(400).json({ message: err.message })
+    const user = await User.findOne({ username: req.query.username });
 
-        }
-        bcrypt.hash(password, salt, async (error, hashedPassword) => {
-          if (error) {
-            console.error(err);
-          } else {
-            console.log(salt);
-            console.log(hashedPassword);
-            newUser.password = hashedPassword;
-          }
-          try {
-            await newUser.save();
-            const token = jwt.sign({ _id: newUser._id }, SECRET, { expiresIn: '30d' });
-            res.json({ message: 'User created successfully', token });
-          } catch (err) {
-            console.log(err);
-            res.status(500).json({ message: err.message })
-          }
-        })
-      })
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
     }
-  }
-  catch (err) {
-    console.error(err)
-    res.status(500).json({ message: 'Internal Server Error' });
+
+    res.json({ username: user.username });
+  } catch (error) {
+    console.error('Error during initialization:', error);
+    next(error);
   }
 });
 
-router.post('/login', authentication, async (req, res) => {
+router.post('/signup', async (req, res, next) => {
   const { username, password } = req.body;
   try {
     const user = await User.findOne({ username });
 
     if (user) {
-      // Use await to ensure that bcrypt.compare completes before moving on
-      const validate = await bcrypt.compare(req.body.password, user.password);
-
-      if (validate) {
-        console.log(user._id)
-        console.log(user.password)
-        console.log(req.body.password)
-        console.log('Comparison Result:', validate);
-        // res.status(401).json({ message: 'Invalid password',user });
-        // res.json({user.password})
-      }
-      console.log(user._id)
-      const token = jwt.sign({ _id: user._id }, SECRET, { expiresIn: '30d' });
-      res.json({ message: 'Logged in successfully', token });
-
-    } else {
-      res.status(403).json({ message: 'Invalid username or password' });
+      return res.status(403).json({ message: 'User already exists', user });
     }
+
+    const newUser = new User({ username, password });
+
+    bcrypt.genSalt(10, (err, salt) => {
+      if (err) {
+        console.error(err);
+        return next(err);
+      }
+
+      bcrypt.hash(password, salt, async (error, hashedPassword) => {
+        if (error) {
+          console.error(error);
+          return next(error);
+        }
+
+        newUser.password = hashedPassword;
+
+        try {
+          await newUser.save();
+          const token = jwt.sign({ _id: newUser._id }, SECRET, { expiresIn: '30d' });
+          res.json({ message: 'User created successfully', token });
+        } catch (err) {
+          console.error(err);
+          next(err);
+        }
+      });
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Internal Server Error' });
+    next(err);
   }
 });
 
-router.get('/alluser', authentication, async (req, res) => {
-  const searchQuery = req.query.search
-    ?
-    {
-      $or: [
-        { username: { $regex: req.query.search, $options: "i" } },
-      ]
+router.post('/login', async (req, res, next) => {
+  const { username, password } = req.body;
+  try {
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(403).json({ message: 'Invalid username or password' });
     }
+
+    // const validate = await bcrypt.compare(password, user.password);
+
+    // if (!validate) {
+    //   return res.status(401).json({ message: 'Invalid password' });
+    // }
+
+    const token = jwt.sign({ _id: user._id }, SECRET, { expiresIn: '30d' });
+    res.json({ message: 'Logged in successfully', token });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+router.get('/alluser', authentication, async (req, res, next) => {
+  const searchQuery = req.query.search
+    ? {
+        $or: [{ username: { $regex: req.query.search, $options: 'i' } }],
+      }
     : {};
-  console.log(searchQuery);
 
   try {
     const users = await User.find({
@@ -110,24 +101,8 @@ router.get('/alluser', authentication, async (req, res) => {
     res.send(users);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    next(error);
   }
-
-
-
-
-  // try {
-  //   const users = (await User.find(searchQuery)).find({_id: { $ne : req.user._id  }});
-  //   res.send(users);
-
-
-  // } catch (error) {
-  //   console.error(error);
-  //   res.status(500).json({ message: 'Internal Server Error' });
-  // }
 });
-
-
-
 
 module.exports = router;

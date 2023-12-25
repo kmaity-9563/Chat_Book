@@ -1,84 +1,87 @@
 import { useState } from 'react'
+import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Homepage from './Pages/Homepages';
-import Chatpage from './Pages/Chatpages';
+// import Homepages from '../pages/Homepages';
+import Chatpages from './Pages/Chatpages';
 import Signup from './components/Signup'
 import Login from './components/Login'
-import { useEffect } from "react";
-import { RecoilRoot } from 'recoil';
+import axios from 'axios';
+import { useEffect } from 'react';
+import { useSetRecoilState } from 'recoil';
 import { userState } from './store/atoms/user'
-import axios from "axios"
-// import { useHistory } from "react-router-dom";
-import { useRecoilValue } from 'recoil';
-
-
+import { useNavigate } from 'react-router-dom';
 function App() {
 
   return (
-    <RecoilRoot>
-      <div className="App"
-        style={{
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "#eeeeee"
-        }}
-      >
-        <Router>
-       {/* <initUser /> */}
-          <Routes>
-            <Route path={"/home"} element={<Homepage />} />
-            <Route path={"/login"} element={<Login />} />
-            <Route path={"/signup"} element={<Signup />} />
-            <Route path={"/chat"} element={<Chatpage />} />
-          </Routes>
-        </Router>
-      </div>
-    </RecoilRoot>
+    <div className="App" 
+    style={{width: "100vw",
+                height: "100vh",
+                backgroundColor: "#eeeeee"
+              }}
+    >
+    <Router>
+    {/* <InitUser/> */}
+    <Routes>
+      {/* <Route path={"/"} element={<Homepages/>}/> */}
+      <Route path={"/login"} element={<Login/>}/>
+      <Route path={"/signup"} element={<Signup/>}/>
+      <Route path={"/chat"} element={<Chatpages/>}/>
+    </Routes>
+   </Router> 
+   </div>
   )
 }
 
-function initUser() {
-  let history = useHistory();
-  const setUser = useRecoilValue(userState)
+
+function InitUser() {
+  const setUser = useSetRecoilState(userState);
+  const navigate = useNavigate();
 
   const init = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/user/init", {
+      const response = await axios.get('http://localhost:3000/user/init', {
         headers: {
-          "Authorization": "Bearer " + localStorage.getItem("token"),
-        }
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        withCredentials: true
+    });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      )
-      if(response.data.userName) {
+
+      const data = await response.json();
+
+      console.log("init response: " + data.username);
+
+      if (data.username) {
         setUser({
-          isLoading : false,
-          userName: response.data.userName,
-          token: response.data.token,
-          
-        })
+          isLoading: false,
+          userName: data.username
+        });
+        // navigate("/login")
       } else {
-        history.push("/login")
         setUser({
-          isLoading : false,
-          userName: null,
-          token : null
-      })
+          isLoading: false,
+          userName: null
+        });
+      }
+    } catch (error) {
+      console.error("Error during initialization:", error);
 
+      setUser({
+        isLoading: false,
+        userName: null
+      });
     }
-  } catch (error) {
-    setUser({
-      isLoading : false,
-      userName: null,
-      token : null
-    })
-  }
-  
-}
+  };
+
   useEffect(() => {
-    initUser();
-  }, [history , setUser]);
+    init();
+  }, []);
 
-  return <></>
+  return <></>;
 }
 
-  export default App
+
+export default App

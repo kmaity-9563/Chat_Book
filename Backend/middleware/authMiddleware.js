@@ -3,7 +3,7 @@ const User = require('../models/UserModel');
 
 const SECRET = 'iamkm';
 
-const jwtAuth = (req, res, next) => {
+const authentication = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (authHeader) {
@@ -27,4 +27,4 @@ const jwtAuth = (req, res, next) => {
   }
 };
 
-module.exports = jwtAuth;
+module.exports = authentication;
