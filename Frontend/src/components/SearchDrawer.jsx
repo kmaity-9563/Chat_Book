@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import Box from '@mui/system/Box';
 import { Typography } from "@mui/material";
-import PositionedMenu from './DashBoard'
+import PositionedMenu from './PositionedMenu'
 
 const SearchDrawer = () => {
   const [search, setSearch] = useState([]);

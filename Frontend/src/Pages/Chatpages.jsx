@@ -2,7 +2,7 @@ import React from "react";
 import { Container } from "@mui/material";
 import { useRecoilValue } from 'recoil';
 import { UserNameState } from "../store/atoms/user";
-import SearchDrawer from "../components/miscellaneous/SearchDrawer";
+import SearchDrawer from "../components/SearchDrawer";
 import MyChats from "../components/MyChats";
 import ChatBox from "../components/ChatBox";
 
