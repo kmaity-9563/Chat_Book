@@ -1,9 +1,7 @@
 // user.js
 import { atom } from 'recoil';
 
-export const userState = atom({
-  key: 'userState',
-  default: {
-    available: true,
-  },
+export const UserNameState = atom({
+  key: 'UserNameState',
+  default: ''
 });

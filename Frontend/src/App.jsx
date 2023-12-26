@@ -7,8 +7,8 @@ import Signup from './components/Signup'
 import Login from './components/Login'
 import axios from 'axios';
 import { useEffect } from 'react';
-import { useSetRecoilState } from 'recoil';
-import { userState } from './store/atoms/user'
+// import { useSetRecoilState } from 'recoil';
+// import { userState } from './store/atoms/user'
 import { useNavigate } from 'react-router-dom';
 function App() {
 
