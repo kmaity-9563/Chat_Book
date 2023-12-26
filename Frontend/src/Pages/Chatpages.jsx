@@ -1,18 +1,17 @@
 import React from "react";
 import { Container } from "@mui/material";
 import { useRecoilValue } from 'recoil';
-import { userState } from "../store/atoms/user";
+import { UserNameState } from "../store/atoms/user";
 import SearchDrawer from "../components/miscellaneous/SearchDrawer";
 import MyChats from "../components/MyChats";
 import ChatBox from "../components/ChatBox";
 
 function Chatpage() {
-  const { available } = useRecoilValue(userState);
+  const userName = useRecoilValue(UserNameState);
 
   return (
     <div style={{ width: "100%" }}>
-      {console.log(available)}
-      {available && <SearchDrawer />}
+      {userName && <SearchDrawer />}
 
       <Container
         sx={{
@@ -23,8 +22,8 @@ function Chatpage() {
           padding: "10px",
         }}
       >
-        {available && <MyChats />}
-        {available && <ChatBox />}
+        {userName && <MyChats />}
+        {userName && <ChatBox />}
       </Container>
     </div>
   );

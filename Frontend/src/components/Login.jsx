@@ -11,8 +11,8 @@ import { useNavigate } from "react-router-dom";
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 // import { json } from "stream/consumers";
-import {userState} from "../store/atoms/user";
-import { useSetRecoilState } from "recoil";
+import {UserNameState} from "../store/atoms/user";
+import { useRecoilState } from "recoil";
 import { useEffect } from "react";
 
 function Login() {
@@ -22,11 +22,7 @@ function Login() {
   const [Pic,setPic] = useState("")
   // const [errormessage, setErrormessage] = useState("");
   const navigate = useNavigate();
-  const setUser = useSetRecoilState(userState);
-
-
-
-  
+  const [userName , setUserName] = useRecoilState(UserNameState);
   const submitHandler = async() => {
     
     try {
@@ -46,12 +42,9 @@ function Login() {
       console.log(response.data.token);
      
       localStorage.setItem('token', response.data.token);
-      setUser((prevUser) => ({
-        ...prevUser,
-        available: true,
-      }));
-      {console.log(setUser.available)}
-      // navigate('/chat');
+   
+     setUserName(username)
+      navigate('/chat');
     } catch (error) {
       console.error('Error during login:', error);
       // setErrorMessage(error.message);
@@ -59,8 +52,11 @@ function Login() {
 
 }
 useEffect(() => {
-  console.log('Updated userName:', setUser.available);
-}, [setUser.userName]);
+  console.log('Updated userName:', userName);
+}, [userName]);
+// useEffect(() => {
+//   console.log('Updated userName:');
+// }, [setUser.userName]);
 
     const handleFileChange = (pic) => {
       // setLoading(true);
