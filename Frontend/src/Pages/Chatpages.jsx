@@ -2,7 +2,7 @@ import React from "react";
 import { Container } from "@mui/material";
 import { useRecoilValue } from 'recoil';
 import { UserNameState } from "../store/atoms/user";
-import SearchDrawer from "../components/SearchDrawer";
+import Header from "../components/Header";
 import MyChats from "../components/MyChats";
 import ChatBox from "../components/ChatBox";
 
@@ -11,7 +11,7 @@ function Chatpage() {
 
   return (
     <div style={{ width: "100%" }}>
-      {userName && <SearchDrawer />}
+      {userName && <Header />}
 
       <Container
         sx={{

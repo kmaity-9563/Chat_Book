@@ -1,59 +1,142 @@
-import React from "react";
-import { useState } from "react";
+import { Drawer, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
+// import React, { useState } from 'react';
+// import * as React from 'react';
+// import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import Box from '@mui/system/Box';
-import { Typography } from "@mui/material";
-import PositionedMenu from './PositionedMenu'
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import React, { useState } from 'react';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
+import ChatLoading from './ChatLoading'
+import axios from 'axios'; 
+// import UserListItem from '../UserAvatar/UserListItem';
 
-const SearchDrawer = () => {
-  const [search, setSearch] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [chatLoading, setChatLoading] = useState(false);
+const SearchDrawer = ({ open, handleClose }) => {
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const [Loading , setLoading] = useState(false);
+  const [SearchResult , setSearchResult] = useState(null)
+  const [Search, setSearch] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const handleSearch = async () => {
+      if(!Search) {
+        setShowAlert(true);
+      } else {  setShowAlert(false);  }
+      try{
+        setLoading(true);
+        const { data } = await axios.get(`http://localhost:3000/user/alluser?search=${Search}`, {
+                headers: {
+                    Authorization: 'Bearer ' + user.token
+                }
+            });
+
+            setLoading(false)
+            setSearchResult(data);
+      } catch {
+        setShowAlert(true);
+          // console.error(error)
+      }
+     
+  }
+
+  const accesChat = (userId) => {
+
+  }
 
   return (
-    <div style={{display : "flex", justifyContent : "space-between",  alignItems:"center" , background: "#F3F3F3",width : "100%",}}>
-    <div style={{
-      display : "flex",
-      alignItems: "center",
-      width : "200px",
-      color : "black" , 
-      paddingTop: 5,   
-      paddingLeft: 5,
-       borderWidth: "5px", bgcolor: 'primary.main',
-      '&:hover': { bgcolor: 'primary.dark', }, 
-      
-    }}>
-      <Tooltip title="Search" placement="bottom">
-        <Button>
-          <FontAwesomeIcon icon={faSearch} />
-        </Button>
-      </Tooltip>
-      <Tooltip title="Search" placement="bottom">
-        <Button onClick={handleClickOpen}>
-          Search User
-        </Button>
-      </Tooltip>
-    </div>
-    <Typography variant="h5" fontFamily="sans-serif" paddingRight={"100px"}>
-      Chat Book
-    </Typography>
-    <div >
-      <PositionedMenu />
-      </div>
-    </div>
+    <Drawer
+      anchor="left"
+      open={open}
+      onClose={handleClose}
+      variant='temporary'
+    >
+      <Box display="flex" padding="2px">
+        <TextField id="standard-helperText"
+          // label="search here"
+          variant="standard"
+          sx={{ paddingLeft: '15px' }}
+          value={Search}
+          onChange={(event) => setSearch(event.target.value)} />
+        <div style={{ marginTop: '10px' }} >
+          <Button size="small" onClick={handleSearch}>find</Button>
+        </div>
+      </Box>
+      <List>
+        {['Inbox'].map((text, index) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton style={{ padding: 0 }}>
+              <Box display="flex" padding="2" component="form"
+                sx={{
+                  '& > :not(style)': { m: 1, width: '20ch' },
+                }}
+                noValidate
+                autoComplete="off">
+
+              </Box>
+              {/* Uncomment the following if you want to include icons */}
+              {/* <ListItemIcon>
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon> */}
+              {/* <ListItemText primary={text} /> */}
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+      {/* {Loading ? (<ChatLoading />) :
+        (SearchResult ?.map(user => (
+             <UserListItem key={user._id} user={user} handleFunction={() => accesChat(user._id)} />
+      )))} */}
+      {showAlert && (
+        <Stack sx={{ width: '100%' }} spacing={2}>
+          <Alert severity="warning">This is a warning alert — check it out!</Alert>
+        </Stack>
+      )}
+    </Drawer>
   );
-}
+
+
+
+  // return (
+  //   <Drawer anchor="left" open={open} onClose={handleClose} variant="temporary">
+  //     <Box display="flex" padding="2px">
+  //       <TextField
+  //         id="standard-helperText"
+  //         variant="standard"
+  //         sx={{ paddingLeft: '15px' }}
+  //         value={Search}
+  //         onChange={(event) => setSearch(event.target.value)}
+  //       />
+  //       <div style={{ marginTop: '10px' }}>
+  //         <Button size="small" onClick={handleSearch}>
+  //           Find
+  //         </Button>
+  //       </div>
+  //     </Box>
+  //     <List>
+  //       {/* Your list items go here */}
+  //     </List>
+  //     {Loading ? (
+  //       <ChatLoading />
+  //     ) : (
+  //       <Typography>
+  //         {SearchResult ? (
+  //           // Display your search result data here
+  //           <ListItemText primary={SearchResult} />
+  //         ) : (
+  //           // If no search result, display a message
+  //           <ListItemText primary="No search result" />
+  //         )}
+  //       </Typography>
+  //     )}
+  //     {showAlert && (
+  //       <Stack sx={{ width: '100%' }} spacing={2}>
+  //         <Alert severity="warning">This is a warning alert — check it out!</Alert>
+  //       </Stack>
+  //     )}
+  //   </Drawer>
+  // );
+
+};
 
 export default SearchDrawer;
