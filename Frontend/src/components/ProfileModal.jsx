@@ -22,8 +22,18 @@ const style = {
  const ProfileModal = () => {
   const userName = useRecoilValue(UserNameState);
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpen = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log('Opening modal');
+    setOpen(true);
+  };
+  
+  const handleClose = () => {
+    console.log('Closing modal');
+    setOpen(false);
+  };
+  
 
   return (
     <div>
@@ -42,7 +52,7 @@ const style = {
           {userName}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+            hey its profile
           </Typography>
         </Box>
       </Modal>
