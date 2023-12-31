@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 // import { json } from "stream/consumers";
-import {UserNameState} from "../store/atoms/user";
+import {userState} from "../store/atoms/user";
 import { useRecoilState } from "recoil";
 import { useEffect } from "react";
 
@@ -22,15 +22,16 @@ function Login() {
   const [Pic,setPic] = useState("")
   // const [errormessage, setErrormessage] = useState("");
   const navigate = useNavigate();
-  const [userName , setUserName] = useRecoilState(UserNameState);
+  const [user , setUser] = useRecoilState(userState);
   const submitHandler = async() => {
     
     try {
+      let response ;
       if (!username || !password) {
         throw new Error('Please enter both username and password');
       }
 
-      const response = await axios.post('http://localhost:3000/user/login', {
+       response = await axios.post('http://localhost:3000/user/login', {
         username: username,
         password: password,
       });
@@ -39,11 +40,13 @@ function Login() {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      console.log(response.data.token);
+      console.log("response token"+ response.data.token);
+      console.log("response data"+ response.data);
+      console.log("response "+ response);
      
       localStorage.setItem('token', response.data.token);
-   
-     setUserName(username)
+      localStorage.setItem("userInfo", JSON.stringify(response.data));
+      setUser(response.data)
       navigate('/chat');
     } catch (error) {
       console.error('Error during login:', error);
@@ -52,8 +55,8 @@ function Login() {
 
 }
 useEffect(() => {
-  console.log('Updated userName:', userName);
-}, [userName]);
+  console.log('Updated user:', user);
+}, [user]);
 // useEffect(() => {
 //   console.log('Updated userName:');
 // }, [setUser.userName]);
@@ -61,9 +64,9 @@ useEffect(() => {
     const handleFileChange = (pic) => {
       // setLoading(true);
       if (!pic) {
-    return <Stack sx={{ width: '100%' }} spacing={2}>
+    return( <Stack sx={{ width: '100%' }} spacing={2}>
         <Alert severity="error">Please select a file</Alert>
-    </Stack>;
+    </Stack>) ;
 }
       console.log('Selected file:', pic);
 

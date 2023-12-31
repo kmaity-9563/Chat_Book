@@ -1,6 +1,6 @@
-import atom from 'recoil';
+import {atom} from 'recoil';
 
-export const selectedChatState = atom({
-    key:'selectedChatState',
-    default : null,
-})
+export const chatsState = atom({
+    key: 'chats',
+    default: null,
+  });

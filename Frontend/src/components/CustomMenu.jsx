@@ -3,10 +3,10 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ProfileModal from './ProfileModal';
+import CustomProfileModal from './CustomProfileModal';
 import { useNavigate } from "react-router-dom";
 
-export default function BasicMenu() {
+const CustomMenu = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -20,8 +20,8 @@ export default function BasicMenu() {
 
   const logOut = () => {
     localStorage.setItem("token", null);
-    navigate("/")
-  }
+    navigate("/");
+  };
 
   return (
     <div>
@@ -45,13 +45,12 @@ export default function BasicMenu() {
         }}
       >
         <MenuItem onClick={handleClose}>
-          <ProfileModal />
+          <CustomProfileModal />
         </MenuItem>
-        <MenuItem 
-        // onClick={handleClose}
-        onClick={logOut}
-        >Logout</MenuItem>
+        <MenuItem onClick={logOut}>Logout</MenuItem>
       </Menu>
     </div>
   );
-}
+};
+
+export default CustomMenu;

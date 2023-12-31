@@ -27,7 +27,7 @@ router.post('/signup', async (req, res, next) => {
     const user = await User.findOne({ username });
 
     if (user) {
-      return res.status(403).json({ message: 'User already exists', user });
+      return res.status(403).json({ message: 'User already exists' });
     }
 
     const newUser = new User({ username, password });
@@ -49,7 +49,7 @@ router.post('/signup', async (req, res, next) => {
         try {
           await newUser.save();
           const token = jwt.sign({ _id: newUser._id }, SECRET, { expiresIn: '30d' });
-          res.json({ message: 'User created successfully', token });
+          res.json({ message: 'User created successfully', token, username: newUser.username, pic: newUser.pic, isAdmin: newUser.isAdmin });
         } catch (err) {
           console.error(err);
           next(err);
@@ -62,10 +62,14 @@ router.post('/signup', async (req, res, next) => {
   }
 });
 
+
 router.post('/login', async (req, res, next) => {
   const { username, password } = req.body;
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username }).select('username pic isAdmin');
+    // if(user) {
+    //   res.json({ user})
+    // }
 
     if (!user) {
       return res.status(403).json({ message: 'Invalid username or password' });
@@ -78,7 +82,9 @@ router.post('/login', async (req, res, next) => {
     // }
 
     const token = jwt.sign({ _id: user._id }, SECRET, { expiresIn: '30d' });
-    res.json({ message: 'Logged in successfully', token });
+    res.json({ message: 'Logged in successfully',
+     token  , username : user.username  , pic : user.pic , isAdmin : user.isAdmin
+  });
   } catch (err) {
     console.error(err);
     next(err);

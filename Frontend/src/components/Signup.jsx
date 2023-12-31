@@ -6,13 +6,13 @@ import { useState } from "react";
 // import { BASE_URL } from "../config.js";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { UserNameState } from "../store/atoms/user.js";
+import { userState } from "../store/atoms/user.js";
 
 function Signup() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate()
-    const [ userName , setUserName ]= useRecoilState(UserNameState);
+    const [ userName , setUserName ]= useRecoilState(userState);
 
     const submitHandler = async () => {
         if (!username || !password) {
