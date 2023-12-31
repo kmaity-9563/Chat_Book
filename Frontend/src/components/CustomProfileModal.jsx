@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useRecoilValue } from 'recoil';
-import { UserNameState } from '../store/atoms/user';
+import { userState } from '../store/atoms/user';
 
 const style = {
   position: 'absolute',
@@ -19,15 +19,22 @@ const style = {
   p: 4,
 };
 
- const ProfileModal = () => {
-  const userName = useRecoilValue(UserNameState);
+ const CustomProfileModal = () => {
+  const user = useRecoilValue(userState);
+  {console.log("user inside modal"+user)}
   const [open, setOpen] = React.useState(false);
-  const handleOpen = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    console.log('Opening modal');
+
+  const handleOpen = () => {
     setOpen(true);
   };
+  
+
+  const handleButtonClick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    handleOpen();
+  };
+
   
   const handleClose = () => {
     console.log('Closing modal');
@@ -36,10 +43,10 @@ const style = {
   
 
   return (
-    <div>
-      <Button onClick={handleOpen}>
+    <>
+      <Button  onClick={ handleButtonClick}>
       <AccountCircleIcon style={{ marginRight: '8px' }} />
-      {userName}
+      {user.username}
       </Button>
       <Modal
         open={open}
@@ -49,15 +56,15 @@ const style = {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-          {userName}
+          {user.username}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             hey its profile
           </Typography>
         </Box>
       </Modal>
-    </div>
+    </>
   );
 }
 
-export default ProfileModal;
+export default CustomProfileModal;

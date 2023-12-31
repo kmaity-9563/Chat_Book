@@ -6,27 +6,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import Box from '@mui/system/Box';
 import { Typography } from "@mui/material";
-import PositionedMenu from './Menu'
+import CustomMenu from './CustomMenu'
 import SearchDrawer from '../components/SearchDrawer';
 
-
-
-
 const Header = () => {
-  // const [state, setState] = React.useState({
-  //   top: false,
-  //   left: false,
-  //   bottom: false,
-  //   right: false,
-  // });
-
-  // const toggleDrawer = (anchor, open) => (event) => {
-  //   if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-  //     return;
-  //   }
-
-  //   setState({ ...state, [anchor]: open });
-  // };
+ 
   const [search, setSearch] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -70,7 +54,8 @@ const Header = () => {
       </Typography>
 
       <div >
-        <PositionedMenu />
+        <CustomMenu />
+        {/* <div>Test Content</div> */}
       </div>
     </div>
   );
