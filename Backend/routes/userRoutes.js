@@ -82,7 +82,7 @@ router.post('/login', async (req, res, next) => {
     // }
 
     const token = jwt.sign({ _id: user._id }, SECRET, { expiresIn: '30d' });
-    res.json({ message: 'Logged in successfully',
+    res.json({ message: 'Logged in successfully',  _id: user._id,
      token  , username : user.username  , pic : user.pic , isAdmin : user.isAdmin
   });
   } catch (err) {
