@@ -11,7 +11,7 @@ import {userState} from '../store/atoms/user'
 
 const SearchDrawer = ({ open, handleClose }) => {
   const [Loading, setLoading] = useState(false);
-  const [SearchResult, setSearchResult] = useState(null);
+  const [SearchResult, setSearchResult] = useState([]);
   const [Search, setSearch] = useState('');
   const [LoadingChat, setLoadingChat] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
@@ -25,14 +25,17 @@ const SearchDrawer = ({ open, handleClose }) => {
 
   const handleSearch = async () => {
     if (!Search) {
+      
       setLoading(true)
       setShowAlert(true); // Show alert if the search term is empty
+     { console.log("nothing searching setloading true")}
     } else {
-      setLoading(true)
+      setLoading(false)
       setShowAlert(false); // Hide alert if there's a search term
     }
   
     try {
+      { console.log(" searching setloading true")}
       setLoading(true);
       if (!user || !user.token) {
         // Handle the case where user or user.token is not defined
@@ -40,30 +43,32 @@ const SearchDrawer = ({ open, handleClose }) => {
       }
   
       // Make the GET request to fetch user data
+      {console.log("searching for this ckey word "+Search)}
       const { data } = await axios.get(`http://localhost:3000/user/alluser?search=${Search}`, {
         headers: {
           Authorization: 'Bearer ' + user.token,
         },
       });
   
-      console.log("Data inside handle search:", data);
+      console.log("fetch data after searching :", data);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
       // Log the error details for debugging
       console.error("Error loading data:", error);
       setShowAlert(true);
+      setLoading(true);
+      { console.log(" searching error setloading false")}
     }
   };
   
 
   const accessChat = async (userId) => {
-    console.log(userId);
+    console.log("userId inside accesschat"+userId);
 
     try {
       setLoadingChat(true);
-      const { data } = await axios.post('http://localhost:3000/chat/fetchchat',
-      {},
+      const { data } = await axios.post('http://localhost:3000/chat/fetchchat',  {userId},
       {
         headers: {
           "Content-type": "application/json",
@@ -71,7 +76,7 @@ const SearchDrawer = ({ open, handleClose }) => {
         },
         }
       );
-
+      console.log("Data inside access chat:", data);
       if (!chatData.find((c) => c._id === data._id)) setChatData([data, ...chatData]);
       SetselectedChat(data);
 
@@ -124,9 +129,24 @@ const SearchDrawer = ({ open, handleClose }) => {
         <ChatLoading />
       ) : (
         <div>
-          {SearchResult?.map((user) => (
-            <UserListItem key={user._id} user={user} handleFunction={() => accessChat(user._id)} />
-          ))}
+          {console.log("Search result during rendering userlist item " + SearchResult)}
+          {user && (
+  console.log("user list component user id " + user._id + " user token " +    user.token  + "username"+ user.username  + " pic " + user.pic + "isAdmin" + user.isAdmin)
+)}
+        {SearchResult && SearchResult.length > 0 && (
+  SearchResult.map((searchUser) => {
+    console.log("user value inside mapping function", searchUser);
+    return (
+      <UserListItem
+        key={searchUser._id}
+        name={searchUser.username}
+        pic={searchUser.pic}
+        handleFunction={() => accessChat(searchUser._id)}
+      />
+    );
+  })
+)}
+
         </div>
       )}
       {showAlert && (

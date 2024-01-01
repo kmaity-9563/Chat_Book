@@ -1,16 +1,17 @@
 import React from 'react';
 import { ListItem, ListItemButton, ListItemText, Avatar, Typography, Box } from '@mui/material';
 
-const UserListItem = ({ user, handleFunction }) => {
+const UserListItem = ({ name, pic, handleFunction }) => {
   return (
-    <ListItem key={user._id} disablePadding>
-      <ListItemButton style={{ padding: 0 }} onClick={handleFunction}>
-        <Avatar size="small" alt={user.name} src={user.pic} />
+    <ListItem disablePadding sx={{ marginBottom: 1 }}>
+      <ListItemButton style={{ padding: 1 }} onClick={handleFunction}>
+        <Avatar size="small" alt={name} src={pic} />
         <Box ml={2}>
           <ListItemText>
-            <Typography variant="subtitle1">{user.name}</Typography>
+            <Typography variant="subtitle1">{name}</Typography>
+            {/* Additional user details can be accessed like: */}
             {/* <Typography variant="body2">
-              <b>Email:</b> {user.email}
+              <b>Email:</b> {email}
             </Typography> */}
           </ListItemText>
         </Box>
