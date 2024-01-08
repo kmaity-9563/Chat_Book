@@ -92,11 +92,15 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.get('/alluser', authentication, async (req, res, next) => {
-  const searchQuery = req.query.search
-    ? {
-        $or: [{ username: { $regex: req.query.search, $options: 'i' } }],
-      }
-    : {};
+  const searchQuery = req.query.search ? { $or: [
+    { 
+         username:   { 
+               $regex: req.query.search,
+               $options: 'i'
+                     } 
+    }
+         ], } 
+     : {};
 
   try {
     const users = await User.find({
