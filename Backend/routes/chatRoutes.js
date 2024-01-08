@@ -1,102 +1,89 @@
 const express = require("express");
 const router = express.Router();
 const authentication = require("../middleware/authMiddleware");
-const Chat = require("../models/Chatmodel"); // Import the Chat model
-const User = require("../models/UserModel"); // Import the User model
+const Chat = require("../models/Chatmodel"); 
+const User = require("../models/UserModel"); 
 const { error } = require("console");
 
-// @description        create or fetch one to one chat
-//  @routes            post/getChat
 
 router.post("/createChat", authentication, async (req, res) => {
-  const { userId } = req.body;
+  const { userId, username } = req.body;
 
-  if (!userId) {
-    console.log("UserId param not sent with request");
+  if (!userId || !username) {
+    console.log("userId or username not sent with the request");
     return res.sendStatus(400);
   }
-  // const user = await User.findById(req.user._id).select("-password");
-  // console.log("Populated User:", user);
 
-  var isChat = await Chat.findOne({
-    isGroupChat: false,
-    $and: [
-      { users: { $elemMatch: { $eq: req.user._id } } },
-      { users: { $elemMatch: { $eq: userId } } },
-    ],
-  }) .populate("username", "-password")
-  .populate("lastMessage");
+  try {
+    let isChat = await Chat.findOne({
+      isGroupChat: false,
+      users: { $all: [req.user._id, userId] },
+    });
 
-  isChat = await User.populate(isChat , {
-    path: "lastmessage",
-    populate : {
-      path : "sender",
-      select : "name pic"
+    if (isChat) {
+      // Case: Chat already exists
+      isChat = await Chat.populate(isChat, {
+        path: "users",
+        select: "-password",
+      });
+
+      return res.status(200).send(isChat);
     }
-  } )
-    // Populate nested path directly
 
-  console.log("req.user._id:", req.user._id);
-  console.log("userId:", userId);
-  console.log("isChat:", isChat);
-
-  if (isChat) {
-    // Case: Chat already exists
-    res.send(isChat);
-  } else {
     // Case: Create a new chat
-    var chatData = {
-      chatName: "sender",
+    const chatData = {
+      chatName: username,
       isGroupChat: false,
       users: [req.user._id, userId],
     };
 
-    try {
-      const createdChat = await Chat.create(chatData);
+    const createdChat = await Chat.create(chatData);
 
-      const fullChat = await Chat.findOne({ _id: createdChat._id })
-       .populate("users", "-password")
-      .populate("userAdmin", "-password")
+    const fullChat = await Chat.findOne({ _id: createdChat._id })
+      .populate({
+        path: "users",
+        select: "-password",
+      })
       .populate({
         path: "lastMessage",
         populate: {
           path: "sender",
-          select: "username pic"
+          select: "username pic",
         },
-      })
+      });
 
-      res.status(200).send(fullChat);
-    } catch (error) {
-      res.status(400);
-      throw new Error(error.message);
-    }
+    res.status(200).send(fullChat);
+  } catch (error) {
+    res.status(400);
+    console.error(error);
+    res.send({ error: "Error creating chat" });
   }
 });
 
-// @description         fetch all chat
-//  @routes            get/getChat
-
 router.get("/fetchchat", authentication, async (req, res) => {
   try {
-    const chat = await Chat.find({
-      users: { $elemMatch: { $eq: req.user._id } },
-    })
-      .populate("users", "-password")
+    const results = await Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
+      .populate({
+        path: "users",
+        select: "-password",
+      })
       .populate("groupAdmin", "-password")
       .populate({
         path: "lastMessage",
         populate: {
           path: "sender",
-          select: "username pic"
+          select: "username pic",
         },
       })
       .sort({ updatedAt: -1 });
 
-    res.send({ chat });
-  } catch {
-    throw new Error(error.message);
+    res.status(200).send(results);
+  } catch (error) {
+    res.status(500).send({ error: "Internal Server Error" });
   }
 });
+
+
 
 // @description        create group chat
 

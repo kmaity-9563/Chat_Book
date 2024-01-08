@@ -1,3 +1,4 @@
+// selectedChat.js
 import { atom } from 'recoil';
 
 export const selectedChatState = atom({
