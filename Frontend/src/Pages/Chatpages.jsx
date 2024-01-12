@@ -1,37 +1,33 @@
 import React from "react";
-import { Container } from "@mui/material";
-import { useRecoilValue, useRecoilState } from 'recoil';
+import { Box, Container } from "@mui/material";
+import { useRecoilValue } from 'recoil';
 import { userState } from "../store/atoms/user";
-
+import { useState } from 'react';
 import Header from "../components/Header";
 import MyChats from "../components/MyChats";
 import ChatBox from "../components/ChatBox";
 
 function Chatpage() {
-  
   const user = useRecoilValue(userState);
+  const [FetchAgain, setFetchAgain] = useState(false);
 
   return (
     <div style={{ width: "100%" }}>
-      {console.log(user)}
       {user && <Header />}
 
-      <Container
+      <Box
         sx={{
           display: "flex",
-          flexDirection: "row",  // Set to "row" to align components horizontally
-          justifyContent: "space-between",
+          flexDirection: "row",
           height: "91.5vh",
           width: "100%",
           padding: "10px",
-          // paddingLeft: "-5px",
-          // paddingLeft: 0, 
-          marginLeft: "0",  // Adjust the left margin as needed
+          marginLeft: "0",
         }}
       >
-        {user && <MyChats />}
-        {user && <ChatBox />}
-      </Container>
+        {user && <MyChats FetchAgain={FetchAgain}  />}
+        {user && <ChatBox FetchAgain={FetchAgain} setFetchAgain={setFetchAgain}  />}
+      </Box>
     </div>
   );
 }
