@@ -15,6 +15,7 @@ import { useRecoilValue , useRecoilState } from 'recoil';
 import UserListItem from './UserListItem';
 import UserBadge from './UserBadge';
 import {chatsState} from '../store/atoms/chat'
+// import {selectedChatState} from '../store/atoms/selectedChat'
 
 const style = {
   position: 'absolute',
@@ -37,6 +38,7 @@ export default function GroupChatModal() {
   const [loading, setLoading] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
   const [SelectedUsers, setSelectedUsers] = useState([])
+  // const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState);
   const user = useRecoilValue(userState);
   const [chatData, setChatData] = useRecoilState(chatsState);
 
@@ -59,6 +61,7 @@ export default function GroupChatModal() {
       );
       console.log("data",data)
       console.log("chatdata",chatData)
+      // setSelectedChat(data, ...selectedChat)
       setChatData(data, ...chatData);
       onclose();
     } catch (err) {

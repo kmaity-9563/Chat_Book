@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import axios from 'axios'; 
 import { userState } from "../store/atoms/user";
@@ -9,9 +8,9 @@ import ChatLoading from './ChatLoading';
 import { getSender } from '../config/ChatLogic';
 import { selectedChatState } from '../store/atoms/selectedChat';
 import { chatsState } from '../store/atoms/chat';
-import GroupChatModal from './GroupChatModal'
+import GroupChatModal from './GroupChatModal';
 
-function MyChats() {
+function MyChats({ FetchAgain }) {
     const user = useRecoilValue(userState);
     const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState);
     const [chatData, setChatData] = useRecoilState(chatsState);
@@ -36,8 +35,8 @@ function MyChats() {
 
     useEffect(() => {
         fetchChat();
-        setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
-    }, [user.token]);
+        setLoggedUser(JSON.parse(localStorage.getItem("userInfo")))
+    }, [user.token, FetchAgain]);
 
     useEffect(() => {
         // Additional actions to perform when selectedChat changes
@@ -46,14 +45,15 @@ function MyChats() {
 
     return (
         <Box
-            display={{ base: selectedChat ? 'flex' : 'none', md: 'flex' }}
+            display={{ base: selectedChat ? 'flex': 'none' , md: 'flex' }}
             flexDirection="column"
             alignItems="center"
             padding={3}
-            width={{ base: '100%', md: '31%' }}
+            width={{ base: '100%', md: '28%' }}
             bgcolor="white"
             borderRadius={1}
             borderWidth={1}
+            border="10px solid #ccc"
         >
             <Stack
                 pb={3}
@@ -65,25 +65,15 @@ function MyChats() {
             >
                 <div>Your Chat </div>
                 <GroupChatModal>
-              
                 </GroupChatModal>
-               
-               {/* <GroupChatModal> */}
-                {/* <Button 
-                    variant="contained" 
-                    sx={{ fontSize: { base: "17px", md: "10px", lg: "17px" } }}
-                    startIcon={<AddIcon />}
-                > add user
-                 </Button> */}
-                 {/* </GroupChatModal> */}
             </Stack>
             <Box
                 d="flex"
                 flexDir="column"
                 p={3}
                 bg="#F8F8F8"
-                width = '100%'
-                height = "100%"
+                width="100%"
+                height="100%"
                 borderRadius="lg"
                 overflowY="hidden"
             >
@@ -100,7 +90,7 @@ function MyChats() {
                                     color: selectedChat === chat ? "white" : "black",
                                     px: 3,
                                     py: 2,
-                                    borderRadius:  'lg',
+                                    borderRadius: 'lg',
                                 }}
                                 key={chat._id}
                             >
@@ -121,4 +111,3 @@ function MyChats() {
 }
 
 export default MyChats;
-
