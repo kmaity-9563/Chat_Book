@@ -41,7 +41,8 @@ function MyChats({ FetchAgain }) {
     useEffect(() => {
         // Additional actions to perform when selectedChat changes
         console.log("SelectedChat changed:", selectedChat);
-    }, [selectedChat]);
+        console.log("ChatData changed:", chatData);
+    }, [selectedChat , chatData]);
 
     return (
         <Box

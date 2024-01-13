@@ -43,31 +43,35 @@ export default function GroupChatModal() {
   const [chatData, setChatData] = useRecoilState(chatsState);
 
   const handelSubmit = async () => {
-    if (!GroupName && !SelectedUsers) {
-      console.log("Please select group name member")
+    if (!GroupName || !SelectedUsers || SelectedUsers.length === 0) {
+      console.log("Please select group name and members");
+      return;
     }
+  
     try {
       const { data } = await axios.post(
         'http://localhost:3000/chat/groupchat',
         {
           name: GroupName,
-          users: JSON.stringify(SelectedUsers.map((usr) => usr._id)),
+          users: SelectedUsers.map((usr) => usr._id),
         },
         {
           headers: {
             Authorization: 'Bearer ' + user.token,
+            'Content-Type': 'application/json',
           },
         }
       );
-      console.log("data",data)
-      console.log("chatdata",chatData)
-      // setSelectedChat(data, ...selectedChat)
-      setChatData(data, ...chatData);
+  
+      console.log("data", data);
+      // Assuming setChatData is a function to update your state with the new chat data
+      setChatData((prevChatData) => [...prevChatData, data]);
       onclose();
     } catch (err) {
-      console.log("error failed to create", err );
+      console.log("Error failed to create", err);
     }
   };
+  
 
   const handelDelete = (delUser) => {
     setSelectedUsers(SelectedUsers.filter((us) => us._id !== delUser._id))

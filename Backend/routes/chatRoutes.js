@@ -94,6 +94,7 @@ router.post("/groupchat", authentication , async (req , res) => {
   }
 
   var Users = JSON.parse(req.body.users);
+  // const Users = req.body.users || [];
 
   if(Users.length < 2){
     res.status(400)
@@ -136,7 +137,7 @@ router.put("/updatename", authentication, async (req, res) => {
 
     const fullChat = await Chat.findByIdAndUpdate(
       chatId,
-      {  chatName},
+      {  chatName : chatName},
       { new: true }
     )
       .populate("users", "-password")
