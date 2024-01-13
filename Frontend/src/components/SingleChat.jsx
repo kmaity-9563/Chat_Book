@@ -6,6 +6,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { getSenderObject } from "../config/ChatLogic";
 import { userState } from '../store/atoms/user'
 import { ProfileModal } from './ProfileModal';
+import {UpdatedGroupChatModal} from './UpdatedGroupChatModal'
 
 function SingleChat({ FetchAgain, setFetchAgain }) {
     const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState);
@@ -38,7 +39,7 @@ function SingleChat({ FetchAgain, setFetchAgain }) {
                         {console.log("selected group Chat details is herre", selectedChat)}
                         {console.log("selected group Chat name is herre", selectedChat.chatName)}
                         {selectedChat.chatName.toUpperCase()}
-                        {/* {<UpdatedGroupChatModal/>} */}
+                        {<UpdatedGroupChatModal  FetchAgain={FetchAgain} setFetchAgain={setFetchAgain} />}
                     </div>}
 
                 </Box>
